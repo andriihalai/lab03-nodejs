@@ -1,13 +1,12 @@
-FROM node:21-slim
-
+FROM node:14-alpine AS builder
 WORKDIR /app
-
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY . ./
 
-EXPOSE 8080
-
-CMD [ "node", "index.js" ]
+FROM gcr.io/distroless/nodejs:14
+WORKDIR /app
+COPY --from=builder /app .
+CMD ["index.js"]
